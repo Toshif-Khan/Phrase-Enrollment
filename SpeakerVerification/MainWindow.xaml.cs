@@ -33,13 +33,14 @@ namespace SpeakerVerification
         private Stream _stream;
         private Guid _speakerId;
         private string userPhrase;
+        private readonly string speakerSubscriptionAPIKey = "Paste your speaker API subscription Key here";
 
         public MainWindow()
         {
             try
             {
                 InitializeComponent();
-                verServiceClient = new SpeakerVerificationServiceClient("1cb9ba6056ee4ba1be230ac93bc1358c");
+                verServiceClient = new SpeakerVerificationServiceClient(speakerSubscriptionAPIKey);
                 initializeRecorder();
                 initializeSpeaker();
             }
@@ -57,10 +58,10 @@ namespace SpeakerVerification
         {
             try
             {
-                //CreateProfileResponse response = await verServiceClient.CreateProfileAsync("en-us");
-                //Console.WriteLine("Profile id :" + response.ProfileId.ToString());
-                //_speakerId = response.ProfileId;
-                _speakerId = Guid.Parse("72431ee5-d02a-4c6c-985c-1217088ed2ec");
+                CreateProfileResponse response = await verServiceClient.CreateProfileAsync("en-us");
+                Console.WriteLine("Profile id :" + response.ProfileId.ToString());
+                _speakerId = response.ProfileId;
+                //_speakerId = Guid.Parse("72431ee5-d02a-4c6c-985c-1217088ed2ec");
                 Profile profile = await verServiceClient.GetProfileAsync(_speakerId);
                 remEnrollText.Text = profile.RemainingEnrollmentsCount.ToString();
                 verPhraseText = null;
@@ -100,8 +101,8 @@ namespace SpeakerVerification
             //Dispose recorder object
             _waveIn.Dispose();
             initializeRecorder();
-            //enrollSpeaker(_stream);
-            verifySpeaker(_stream);
+            enrollSpeaker(_stream);
+            //verifySpeaker(_stream);
         }
 
         /// <summary>
